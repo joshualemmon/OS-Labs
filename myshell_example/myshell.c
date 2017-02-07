@@ -5,6 +5,7 @@
  * All rights reserved.
  * 
  */
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -16,6 +17,7 @@
 
 // Put macros or constants here using #define
 #define BUFFER_LEN 256
+#define SEPARATORS " \t\n"
 
 // Put global environment variables here
 
@@ -34,6 +36,8 @@ int main(int argc, char *argv[])
     while (fgets(buffer, BUFFER_LEN, stdin) != NULL)
     {
         // Perform string tokenization to get the command and argument
+    	char* token = strtok(buffer, SEPARATORS);
+    	strcpy(command, &token[0]);
 
         // Check the command and execute the operations for each command
         // cd command -- change the current directory
@@ -48,6 +52,18 @@ int main(int argc, char *argv[])
         else if (strcmp(command, "quit") == 0)
         {
             return EXIT_SUCCESS;
+        }
+        else if (strcmp(command, "help") == 0)
+        {
+        	char line[256];
+        	FILE* file = fopen("README.txt", "r");
+        	if (file)
+        	{
+        		while((fgets(line, sizeof(line), file)))
+        			printf("%s",line);
+        		printf("\n");
+        		fclose(file);
+        	}
         }
 
         // Unsupported command

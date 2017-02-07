@@ -35,9 +35,19 @@ int main(int argc, char *argv[])
     // Perform an infinite loop getting command input from users
     while (fgets(buffer, BUFFER_LEN, stdin) != NULL)
     {
+    	if(buffer[strlen(buffer)-1] == '\n')
+    		buffer[strlen(buffer)-1] = '\0';
+    	strcpy(arg,"");
         // Perform string tokenization to get the command and argument
     	char* token = strtok(buffer, SEPARATORS);
-    	strcpy(command, &token[0]);
+    	strcpy(command, token);
+    	while(token != NULL)
+    	{
+    		strcat(arg, token);
+    		strcat(arg, " ");
+    		token = strtok(NULL, SEPARATORS);
+    	}
+    	strcpy(arg, &arg[strlen(command)+1]);
 
         // Check the command and execute the operations for each command
         // cd command -- change the current directory
@@ -51,12 +61,14 @@ int main(int argc, char *argv[])
         // quit command -- exit the shell
         else if (strcmp(command, "quit") == 0)
         {
+        	printf("%s %s\n", command, arg);
             return EXIT_SUCCESS;
         }
         else if (strcmp(command, "help") == 0)
         {
         	//read in the README.txt file and output it line by line
         	//to the console
+        	printf("%s %s\n",command, arg);
         	char line[256];
         	FILE* file = fopen("README.txt", "r");
         	if (file)

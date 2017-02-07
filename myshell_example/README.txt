@@ -5,3 +5,5 @@ help: Displays the README.txt for the shell.
 quit: Exits out of the shell.
 
 cd: Changes directory to given path.
+
+pwd: Outputs the current directory to the console.

@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
         }
         else if (strcmp(command, "help") == 0)
         {
+        	//read in the README.txt file and output it line by line
+        	//to the console
         	char line[256];
         	FILE* file = fopen("README.txt", "r");
         	if (file)

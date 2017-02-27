@@ -13,5 +13,8 @@
 // extern void display_help(void);
 
 extern void echo(char* arg);
+extern void help(void);
+extern void pwd(char* wd);
+extern void pauseShell(void);
 
 #endif /* UTILITY_H_ */

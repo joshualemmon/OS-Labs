@@ -29,6 +29,8 @@ int main(int argc, char *argv[])
     char buffer[BUFFER_LEN] = { 0 };
     char command[BUFFER_LEN] = { 0 };
     char arg[BUFFER_LEN] = { 0 };
+    char defaultDir[BUFFER_LEN] = "/home";
+    char wd[BUFFER_LEN] = "/home";
 
     // Parse the commands provided using argc and argv
 
@@ -70,19 +72,19 @@ int main(int argc, char *argv[])
         	//read in the README.txt file and output it line by line
         	//to the console
         
-        	char line[256];
-        	FILE* file = fopen("README.txt", "r");
-        	if (file)
-        	{
-        		while((fgets(line, sizeof(line), file)))
-        			printf("%s",line);
-        		printf("\n");
-        		fclose(file);
-        	}
+        	help();
         }
         else if (strcmp(command, "echo") == 0)
         {
         	echo(arg);
+        }
+        else if(strcmp(command, "pwd") == 0)
+        {
+        	pwd(wd);
+        }
+        else if(strcmp(command, "pause") == 0)
+        {
+        	pauseShell();
         }
 
         // Unsupported command

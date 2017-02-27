@@ -20,3 +20,32 @@ void echo(char* arg)
 {
 	printf("%s\n",arg);
 }
+
+void help(void)
+{
+	char line[256];
+        	FILE* file = fopen("README.txt", "r");
+        	if (file)
+        	{
+        		while((fgets(line, sizeof(line), file)))
+        			printf("%s",line);
+        		printf("\n");
+        		fclose(file);
+        	}
+}
+
+void pwd(char* wd)
+{
+	printf("%s\n",wd);
+}
+
+void pauseShell()
+{
+	printf("PAUSED\n");
+	char c = getchar();
+	while(c != 10)
+	{
+		c = getchar();
+	}
+	printf("UNPAUSED\n");
+}

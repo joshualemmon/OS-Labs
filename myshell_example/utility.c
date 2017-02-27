@@ -77,12 +77,25 @@ void ls(char* PWD)
 		printf("\n%d files displayed.\n",i);
 	} 
 	else
-		printf("Error opening directory");
+		printf("Error opening directory\n");
 }
 
 void dir(char* dir)
 {
-
+	printf("%s\n", dir);
+	DIR* currdir = opendir((const char*)dir);
+	struct dirent* dirptr = NULL;
+	unsigned int i;
+	if(currdir != NULL)
+	{
+		for (i = 0; NULL !=(dirptr = readdir(currdir)); i++)
+		{
+			printf("%s  ", dirptr->d_name);
+		}
+		printf("\n%d files displayed.\n",i);
+	} 
+	else
+		printf("Error opening directory\n");
 }
 
 void penviron(char* PWD)

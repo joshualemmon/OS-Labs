@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     		strcat(arg, " ");
     		token = strtok(NULL, SEPARATORS);
     	}
-
+    	arg[strlen(arg)-1] = '\0';
     	printf("Command: %s arg: %s\n", command, arg);
 
         // Check the command and execute the operations for each command
@@ -59,13 +59,13 @@ int main(int argc, char *argv[])
         if (strcmp(command, "cd") == 0)
         {
             // your code here
-            if(strcmp(arg,"") == 0 || strcmp(arg,"~ ") == 0)
+            if(strcmp(arg,"") == 0 || strcmp(arg,"~") == 0)
             {
             	strcpy(OLDPWD,PWD);
             	strcpy(PWD,getenv("HOME"));
             	cd(PWD);
             }
-            else if(strcmp(arg,".. ") == 0)
+            else if(strcmp(arg,"..") == 0)
             {
             	/*char* t = strtok(PWD,'/');
             	strcpy(PWD,'/');
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
             		strcat(PWD,t);
             	}*/
             }
-            else if(strcmp(arg,"- ") == 0)
+            else if(strcmp(arg,"-") == 0)
             {
             	strcpy(PWD,OLDPWD);
             	cd(PWD);
@@ -86,6 +86,7 @@ int main(int argc, char *argv[])
             {
             	char temp[sizeof(PWD)+sizeof(arg)];
             	strcpy(temp,PWD);
+            	strcat(temp,"/");
             	strcat(temp,arg);
             	printf("%s\n",temp);
 				if(cd(temp))
@@ -135,6 +136,14 @@ int main(int argc, char *argv[])
         else if(strcmp(command, "environ") == 0)
         {
         	penviron(PWD);
+        }
+        else if(strcmp(command, "dir") == 0)
+        {
+        	char direct[BUFFER_LEN];
+        	strcpy(direct, PWD);
+        	strcat(direct, "/");
+        	strcat(direct,arg);
+        	dir(direct);
         }
 
         // Unsupported command

@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     		strcat(arg, " ");
     		token = strtok(NULL, SEPARATORS);
     	}
-    	arg[strlen(arg)-1] = '\0';
+    	arg[strlen(arg)-1] = '\0'; //removing extra character at end of arg
     	printf("Command: %s arg: %s\n", command, arg);
 
         // Check the command and execute the operations for each command
@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
         {
             return EXIT_SUCCESS;
         }
+        // help command -- display README.txt
         else if (strcmp(command, "help") == 0)
         {
         	//read in the README.txt file and output it line by line
@@ -113,30 +114,37 @@ int main(int argc, char *argv[])
         
         	help();
         }
+        // echo command -- display arg to screen
         else if (strcmp(command, "echo") == 0)
         {
         	echo(arg);
         }
+        // pwd command -- display PWD to screen
         else if(strcmp(command, "pwd") == 0)
         {
         	pwd(PWD);
         }
+        // pause command -- pause shell operations
         else if(strcmp(command, "pause") == 0)
         {
         	pauseShell();
         }
+        // clr command -- clear terminal screen
         else if(strcmp(command, "clr") == 0)
         {
         	clr();
         }
+        // ls command -- print contents of PWD
         else if(strcmp(command, "ls") == 0)
         {
         	ls(PWD);
         }
+        // environ command -- print environment variables
         else if(strcmp(command, "environ") == 0)
         {
         	penviron(PWD);
         }
+        // dir command -- print contents of directory arg
         else if(strcmp(command, "dir") == 0)
         {
         	char direct[BUFFER_LEN];
@@ -145,7 +153,6 @@ int main(int argc, char *argv[])
         	strcat(direct,arg);
         	dir(direct);
         }
-
         // Unsupported command
         else
         {

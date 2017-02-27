@@ -103,7 +103,7 @@ void penviron(char* PWD)
 	printf("$HOME: %s\n", getenv("HOME"));
 	printf("$PATH: %s\n", PWD);
 }
-
+//gets char without echoing
 int getch()
 {
 	struct termios oldt, newt;

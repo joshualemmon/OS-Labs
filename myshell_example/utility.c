@@ -49,3 +49,8 @@ void pauseShell()
 	}
 	printf("UNPAUSED\n");
 }
+
+int cd(char* dir)
+{
+	return chdir(dir);
+}

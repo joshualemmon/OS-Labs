@@ -29,8 +29,10 @@ int main(int argc, char *argv[])
     char buffer[BUFFER_LEN] = { 0 };
     char command[BUFFER_LEN] = { 0 };
     char arg[BUFFER_LEN] = { 0 };
-    char defaultDir[BUFFER_LEN] = "/home";
-    char wd[BUFFER_LEN] = "/home";
+    char OLDPWD[BUFFER_LEN];
+    char PWD[BUFFER_LEN];
+    getcwd(PWD,sizeof(PWD));
+    strcpy(OLDPWD,PWD);
 
     // Parse the commands provided using argc and argv
 
@@ -58,6 +60,31 @@ int main(int argc, char *argv[])
         if (strcmp(command, "cd") == 0)
         {
             // your code here
+            if(strcmp(arg,"") == 0 || strcmp(arg,"~ ") == 0)
+            {
+            	strcpy(OLDPWD,PWD);
+            	strcpy(PWD,getenv("HOME"));
+            	cd(PWD);
+            }
+            else if(strcmp(arg,".. ") == 0)
+            {
+            	strcpy(PWD,OLDPWD);
+            	cd(PWD);
+            }
+            else
+            {
+            	char temp[sizeof(PWD)+sizeof(arg)];
+            	strcpy(temp,PWD);
+            	strcat(temp,arg);
+            	printf("%s\n",temp);
+				if(cd(temp))
+            	{
+            		strcpy(OLDPWD,PWD);
+            		strcpy(PWD,temp);
+            	}
+            	else
+            		printf("Error, no such directory found");
+        	}
         }
 
         // other commands here...
@@ -80,7 +107,7 @@ int main(int argc, char *argv[])
         }
         else if(strcmp(command, "pwd") == 0)
         {
-        	pwd(wd);
+        	pwd(PWD);
         }
         else if(strcmp(command, "pause") == 0)
         {

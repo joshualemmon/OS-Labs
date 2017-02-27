@@ -22,6 +22,7 @@
 // Put global environment variables here
 char OLDPWD[BUFFER_LEN];
 char PWD[BUFFER_LEN];
+char shell[BUFFER_LEN];
 // Define functions declared in myshell.h here
 
 int main(int argc, char *argv[])
@@ -31,6 +32,7 @@ int main(int argc, char *argv[])
     char command[BUFFER_LEN] = { 0 };
     char arg[BUFFER_LEN] = { 0 };
     getcwd(PWD,sizeof(PWD));
+    getcwd(shell,sizeof(shell));
 	strcpy(OLDPWD,PWD);
 
     // Parse the commands provided using argc and argv
@@ -140,7 +142,9 @@ int main(int argc, char *argv[])
         // environ command -- print environment variables
         else if(strcmp(command, "environ") == 0)
         {
-        	penviron(PWD);
+        	printf("$HOME: %s\n", getenv("HOME"));
+            printf("$SHELL: %s\n", shell);
+            printf("$PATH: %s\n", PWD);
         }
         // dir command -- print contents of directory arg
         else if(strcmp(command, "dir") == 0)

@@ -20,7 +20,6 @@ extern int cd(char* dir);
 extern void clr(void);
 extern void ls(char* PWD);
 extern void dir(char* dir);
-extern void penviron(char* PWD);
 extern int getch();
 
 #endif /* UTILITY_H_ */

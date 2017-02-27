@@ -97,12 +97,6 @@ void dir(char* dir)
 	else
 		printf("Error opening directory\n");
 }
-
-void penviron(char* PWD)
-{
-	printf("$HOME: %s\n", getenv("HOME"));
-	printf("$PATH: %s\n", PWD);
-}
 //gets char without echoing
 int getch()
 {

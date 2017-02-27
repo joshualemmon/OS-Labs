@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     		token = strtok(NULL, SEPARATORS);
     	}
 
-    	printf("%s %s\n", command, arg);
+    	printf("Command: %s arg: %s\n", command, arg);
 
         // Check the command and execute the operations for each command
         // cd command -- change the current directory
@@ -63,7 +63,6 @@ int main(int argc, char *argv[])
         // quit command -- exit the shell
         else if (strcmp(command, "quit") == 0)
         {
-        	
             return EXIT_SUCCESS;
         }
         else if (strcmp(command, "help") == 0)
@@ -80,6 +79,10 @@ int main(int argc, char *argv[])
         		printf("\n");
         		fclose(file);
         	}
+        }
+        else if (strcmp(command, "echo") == 0)
+        {
+        	echo(arg);
         }
 
         // Unsupported command

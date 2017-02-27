@@ -15,3 +15,8 @@
 
 // Define your utility functions here, these will most likely be functions that you call
 // in your myshell.c source file
+
+void echo(char* arg)
+{
+	printf("%s\n",arg);
+}

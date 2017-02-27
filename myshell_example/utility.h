@@ -12,4 +12,6 @@
 // extern keyword such as in the following example:
 // extern void display_help(void);
 
+extern void echo(char* arg);
+
 #endif /* UTILITY_H_ */

@@ -67,15 +67,13 @@ int main(int argc, char *argv[])
             }
             else if(strcmp(arg,"..") == 0)
             {
-            	/*char* t = strtok(PWD,'/');
-            	strcpy(PWD,'/');
-            	strcat(PWD,t);
-            	t = strtok(NULL,'/');
-            	while(t != NULL)
+            	while(PWD[strlen(PWD)-1] != '/')
             	{
-            		strcat(PWD,'/');
-            		strcat(PWD,t);
-            	}*/
+            		PWD[strlen(PWD)-1] = '\0';
+            	}
+            	PWD[strlen(PWD)-1] = '\0';
+            	cd(PWD);
+
             }
             else if(strcmp(arg,"-") == 0)
             {

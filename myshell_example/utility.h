@@ -14,8 +14,13 @@
 
 extern void echo(char* arg);
 extern void help(void);
-extern void pwd(char* wd);
+extern void pwd(char* PWD);
 extern void pauseShell(void);
 extern int cd(char* dir);
+extern void clr(void);
+extern void ls(char* PWD);
+extern void dir(char* dir);
+extern void penviron(char* PWD);
+extern int getch();
 
 #endif /* UTILITY_H_ */

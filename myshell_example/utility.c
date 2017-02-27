@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include "utility.h"
+#include <termios.h>
 
 // Define your utility functions here, these will most likely be functions that you call
 // in your myshell.c source file
@@ -34,18 +35,18 @@ void help(void)
         	}
 }
 
-void pwd(char* wd)
+void pwd(char* PWD)
 {
-	printf("%s\n",wd);
+	printf("%s\n",PWD);
 }
 
 void pauseShell()
 {
 	printf("PAUSED\n");
-	char c = getchar();
+	char c = getch();
 	while(c != 10)
 	{
-		c = getchar();
+		c = getch();
 	}
 	printf("UNPAUSED\n");
 }
@@ -53,4 +54,52 @@ void pauseShell()
 int cd(char* dir)
 {
 	return chdir(dir);
+}
+
+void clr(void)
+{
+	//escape code to replace characters on screen with spaces and to set
+	//cursor at top left position
+	printf("\e[1;1H\e[2J");
+}
+
+void ls(char* PWD)
+{
+	DIR* currdir = opendir((const char*)PWD);
+	struct dirent* dirptr = NULL;
+	unsigned int i;
+	if(currdir != NULL)
+	{
+		for (i = 0; NULL !=(dirptr = readdir(currdir)); i++)
+		{
+			printf("%s  ", dirptr->d_name);
+		}
+		printf("\n%d files displayed.\n",i);
+	} 
+	else
+		printf("Error opening directory");
+}
+
+void dir(char* dir)
+{
+
+}
+
+void penviron(char* PWD)
+{
+	printf("$HOME: %s\n", getenv("HOME"));
+	printf("$PATH: %s\n", PWD);
+}
+
+int getch()
+{
+	struct termios oldt, newt;
+    int ch;
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return ch;
 }

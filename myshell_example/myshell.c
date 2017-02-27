@@ -20,7 +20,8 @@
 #define SEPARATORS " \t\n"
 
 // Put global environment variables here
-
+char OLDPWD[BUFFER_LEN];
+char PWD[BUFFER_LEN];
 // Define functions declared in myshell.h here
 
 int main(int argc, char *argv[])
@@ -29,10 +30,8 @@ int main(int argc, char *argv[])
     char buffer[BUFFER_LEN] = { 0 };
     char command[BUFFER_LEN] = { 0 };
     char arg[BUFFER_LEN] = { 0 };
-    char OLDPWD[BUFFER_LEN];
-    char PWD[BUFFER_LEN];
     getcwd(PWD,sizeof(PWD));
-    strcpy(OLDPWD,PWD);
+	strcpy(OLDPWD,PWD);
 
     // Parse the commands provided using argc and argv
 
@@ -67,6 +66,18 @@ int main(int argc, char *argv[])
             	cd(PWD);
             }
             else if(strcmp(arg,".. ") == 0)
+            {
+            	/*char* t = strtok(PWD,'/');
+            	strcpy(PWD,'/');
+            	strcat(PWD,t);
+            	t = strtok(NULL,'/');
+            	while(t != NULL)
+            	{
+            		strcat(PWD,'/');
+            		strcat(PWD,t);
+            	}*/
+            }
+            else if(strcmp(arg,"- ") == 0)
             {
             	strcpy(PWD,OLDPWD);
             	cd(PWD);
@@ -112,6 +123,18 @@ int main(int argc, char *argv[])
         else if(strcmp(command, "pause") == 0)
         {
         	pauseShell();
+        }
+        else if(strcmp(command, "clr") == 0)
+        {
+        	clr();
+        }
+        else if(strcmp(command, "ls") == 0)
+        {
+        	ls(PWD);
+        }
+        else if(strcmp(command, "environ") == 0)
+        {
+        	penviron(PWD);
         }
 
         // Unsupported command

@@ -85,7 +85,7 @@ int rows()
 	for(int i = 0; i < 9; i++)
 	{
 		pthread_join(rowthreads[i],&valid);
-		if(!(int)valid)
+		if((int)valid == 0)
 			validrow = 0;
 	}
 	if(validrow)
@@ -102,17 +102,17 @@ int cols()
 	pthread_t colthreads[9];
 	for(int i = 0; i < 9; i++)
 	{
-		int column[9];
-		for(int j = 0; j < 9; j++)
+		int column[9][9];
+		for(int k = 0; k < 9; k++)
 		{
-			column[j] = sudoku[i][j];
+			column[i][k] = sudoku[k][i];
 		}
-		pthread_create(&colthreads[i], NULL, checkcol, column);
+		pthread_create(&colthreads[i], NULL, checkcol, column[i]);
 	}
 	for(int i = 0; i < 9; i++)
 	{
 		pthread_join(colthreads[i],&valid);
-		if(!(int)valid)
+		if((int)valid == 0)
 			validcol = 0;
 	}
 	if(validcol)
@@ -126,32 +126,38 @@ int squares()
 {
 	void* valid;
 	int validsquare = 1;
+	int columncounter = 0;
+	int rowcounter = 0;
+	int square[9][3][3];
 	pthread_t squarethreads[9];
 	for(int i = 0; i < 9; i++)
 	{
-		int columncounter = 3*i;
-		int rowcounter = i;
-		int square[3][3];
+		if(i%3 == 0 && i != 0)
+			rowcounter = i;
+		columncounter = 3*(i%3);
 		for(int j = 0; j < 3; j++)
 		{
 			for(int k = 0; k < 3; k++)
 			{
-				square[j][k] = sudoku[rowcounter][columncounter++];
+				square[i][j][k] = sudoku[rowcounter][columncounter++];
 			}
 			columncounter-=3;
 			rowcounter++;
 		}
-		for(int j = 0; j < 3; j++)
-		{
-			for(int k = 0; k < 3; k++)
-			{
-				printf("%d ",square[j][k]);
-			}
-			printf("\n");
-		}
-		printf("\n");
-	}	
+		rowcounter-=3;
 
+		pthread_create(&squarethreads[i],NULL, checksquare, square[i]);
+	}	
+	for(int i = 0; i < 9; i++)
+	{
+		pthread_join(squarethreads[i],&valid);
+		if((int)valid == 0)
+			validsquare = 0;
+	}
+	if(validsquare)
+		printf("Squares are valid\n");
+	else 
+		printf("Squares are invalid\n");
 
 	return validsquare;
 }
@@ -159,7 +165,15 @@ int squares()
 int main()
 {	
 	readpuzzle(sudoku);
-
+	for(int i = 0; i < 9; i++)
+	{
+		for(int j = 0; j < 9; j++)
+		{
+			printf("%d ",sudoku[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
 	if(rows() && cols() && squares())
 		printf("Solution is valid\n");
 	else

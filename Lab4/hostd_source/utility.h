@@ -13,17 +13,25 @@
 
 // Resources structure containing integers for each resource constraint and an
 // array of 1024 for the memory
-// typedef struct {
-//  ...
-//  ...
-// } resources;
+typedef struct {
+	int memory_array[1024];
+	
+} resources;
 
 
 // Processes structure containing all of the process details parsed from the 
 // input file, should also include the memory address (an index) which indicates
 // where in the resources memory array its memory was allocated
 typedef struct {
-	
+	int arrival_time;
+	int priority;
+	int proc_time;
+	int mbytes;
+	int num_printers;
+	int num_cds;
+	int num_scanners;
+	int num_modems;
+	int memory_address;
 } proc;
 
 
@@ -42,7 +50,7 @@ typedef struct {
 
 // Function to parse the file and initialize each process structure and add
 // it to your job dispatch list queue (linked list)
-// extern void load_dispatch(char *dispatch_file, node_t *queue);
+extern void load_dispatch(char *dispatch_file, node_t *queue);
 
 
 #endif /* UTILITY_H_ */

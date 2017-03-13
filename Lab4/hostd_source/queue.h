@@ -12,10 +12,8 @@
 
 // Your linked list structure for your queue
 typedef struct node{ 
-
   proc process;
   struct node* next;
-
 } node_t; 
 
 // Include your relevant FIFO queue functions declarations here they must start 

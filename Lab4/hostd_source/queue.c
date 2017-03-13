@@ -12,12 +12,12 @@
 // Define your FIFO queue functions here, these will most likely be the
 // push and pop functions that you declared in your header file
 
-node_t *push(node_t *head, proc process);
+node_t *push(node_t *head, proc process)
 {
+	node_t* newNode = NULL;
 	if (head->next == NULL)
 	{
-		node_t* newNode;
-		newNode->process = proc;
+		newNode->process = process;
 		newNode->next = NULL;
 		head->next = newNode;
 	}
@@ -27,15 +27,25 @@ node_t *push(node_t *head, proc process);
 		curr = head;
 		while(curr->next != NULL)
 			curr=curr->next;
-		node_t* newNode;
-		newNode->process = proc;
+		newNode->process = process;
 		newNode->next = NULL;
 		curr->next = newNode;
 	}
 	return head;
 }
 
-// node_t *pop(node_t *tail);
-// {
-//      ...
-// }
+node_t *pop(node_t *head)
+{
+	node_t* retNode = NULL;
+	if(head->next != NULL)
+	{
+		retNode = head;
+		head = head->next;
+	}
+	else
+	{
+		retNode = head;
+		head = NULL;
+	}
+	return retNode;
+}

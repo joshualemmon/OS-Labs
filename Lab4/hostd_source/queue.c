@@ -39,7 +39,7 @@ node_t *push(node_t *head, proc process)
 	}
 	return head;
 }
-
+//remove the first node in the queue
 node_t *pop(node_t *head)
 {
 	node_t* retNode = NULL;

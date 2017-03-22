@@ -14,8 +14,10 @@
 // Resources structure containing integers for each resource constraint and an
 // array of 1024 for the memory
 typedef struct {
-	int memory_array[1024];
-	
+	int memory_array[MEMORY];
+	int scanners;
+	int modem;
+	int cds;
 } resources;
 
 
@@ -46,7 +48,7 @@ extern int alloc_mem(resources res, int size);
 // Function to free the allocated contiguous chunk of memory in your resources
 // structure memory array, should take the resource struct, start index, and 
 // size (amount of memory allocated) as arguments
-extern free_mem(resources res, int index, int size);
+extern void free_mem(resources res, int index, int size);
 
 // Function to parse the file and initialize each process structure and add
 // it to your job dispatch list queue (linked list)

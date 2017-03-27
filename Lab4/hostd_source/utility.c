@@ -56,6 +56,6 @@ void load_dispatch(char *dispatch_file, node_t *queue)
 	while(fscanf(f,"%d, %d, %d, %d, %d, %d, %d, %d\n", &process.arrival_time, &process.priority, &process.proc_time, &process.mbytes, 
 													   &process.num_printers, &process.num_cds, &process.num_scanners, &process.num_modems) > 0)
 	{
-		queue = push(queue, process);
+		push(queue, process);
 	}
 }

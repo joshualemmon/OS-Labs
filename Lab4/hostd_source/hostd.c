@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
     res.printers = 2;
     res.cds = 2;
     res.modems = 1;
+    //declaring queues
     node_t *dispatch_queue = malloc(sizeof(node_t));
     node_t *rtq = malloc(sizeof(node_t));
     node_t *pq1 = malloc(sizeof(node_t));
@@ -50,6 +51,7 @@ int main(int argc, char *argv[])
     node_t* curr = dispatch_queue;
     int time = 0;
     int proc_num = 1;
+    //iterate throught dispatch list
     while(curr != NULL)
     {
         printf("Time step %d:\n", time);
@@ -98,11 +100,34 @@ int main(int argc, char *argv[])
                     {
                         free_mem(res, p.memory_address,p.mbytes);
                         printf("Process %d finished, freed %d MB memory, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
+                        pop(n);
                     }
                     else
                         printf("Process %d, %d time steps remaining\n",p.proc_num,p.proc_time);
                 }
+                n->process = p;
                 n = n->next;
+            }
+        }
+        else
+        {
+            if(pq1 != NULL)
+            {
+                node_t* n = pq1;
+                while(n->next != NULL)
+                {
+                    proc p = n->process;
+                    if(p.memory_address == -1)
+                    {
+                        p.memory_address = alloc_mem(res,p.mbytes);
+                        if(p.memory_address != -1)
+                            printf("Process %d allocated %d MB memory at address %d, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes, p.memory_address,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
+                    }
+                    else
+                    {
+                        p.proc_time--;
+                    }
+                }
             }
         }
         time++;

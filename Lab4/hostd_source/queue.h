@@ -14,7 +14,7 @@
 typedef struct node{ 
   proc process;
   struct node* next;
-};
+}node_t;
 
 typedef struct node node_t; 
 

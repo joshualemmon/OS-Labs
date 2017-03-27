@@ -30,6 +30,7 @@ void *push(node_t *head, proc process)
 		curr->next->process = process;
 		curr->next->next = NULL;
 	}
+	//printf("proc num %d\n", process.proc_num);
 }
 //remove the first node in the queue
 proc pop(node_t *head)
@@ -45,5 +46,6 @@ proc pop(node_t *head)
 		p = head->process;
 		free(head);
 	}
+
 	return p;
 }

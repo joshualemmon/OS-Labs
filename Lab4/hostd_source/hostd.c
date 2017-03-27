@@ -50,15 +50,17 @@ int main(int argc, char *argv[])
     // to the appropriate queues
     node_t* curr = dispatch_queue;
     int time = 0;
-    int proc_num = 1;
     //iterate throught dispatch list
-    while(curr != NULL)
+    while(curr != NULL || rtq != NULL || pq1 != NULL || pq2 != NULL || pq3 != NULL)
     {
+        //output current time step
         printf("Time step %d:\n", time);
+        //iterate through dispatch list until all arrival times equal to 
+        //current timestep are dealt with.
         while(curr->process.arrival_time == time && curr != NULL)
         {
             proc p = pop(curr);
-            p.proc_num = proc_num++;
+            //push process onto its respective priority queue
             if(p.priority == 0)
             {
                 printf("Process %d added to RT queue.\n",p.proc_num);
@@ -81,12 +83,16 @@ int main(int argc, char *argv[])
             }
             curr=curr->next;
         }
+        //prioritize the real time queue first
+        //if the rtq isnt empty
         if(rtq != NULL)
         {
             node_t* n = rtq;
-            while(n->next != NULL)
+            //iterate through rtq
+            while(n != NULL)
             {
                 proc p = n->process;
+                //if rtq process hasnt been allocated yet, allocate it
                 if(p.memory_address == -1)
                 {
                     p.memory_address = alloc_mem(res,p.mbytes);
@@ -95,12 +101,25 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
+                    //decrement runtime for process
                     p.proc_time--;
+                    //if the run tim is complete, remove process from memory
                     if(p.proc_time == 0)
                     {
                         free_mem(res, p.memory_address,p.mbytes);
                         printf("Process %d finished, freed %d MB memory, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
-                        pop(n);
+                        node_t* temp = rtq;
+                        if(temp == n)
+                        {
+                            free(n);
+                        }
+                        else
+                        {
+                            while(temp->next != n)
+                                temp = temp->next;
+                            temp->next = n->next;
+                            n = temp;
+                        }
                     }
                     else
                         printf("Process %d, %d time steps remaining\n",p.proc_num,p.proc_time);
@@ -109,14 +128,18 @@ int main(int argc, char *argv[])
                 n = n->next;
             }
         }
+        //if the rtq is empty move onto pq1
         else
         {
+            //if the priority 1 queue isn't empty
             if(pq1 != NULL)
             {
                 node_t* n = pq1;
-                while(n->next != NULL)
+                //iterate through pq1
+                while(n != NULL)
                 {
                     proc p = n->process;
+                    //allocate pq1 process is its unallocated
                     if(p.memory_address == -1)
                     {
                         p.memory_address = alloc_mem(res,p.mbytes);
@@ -124,18 +147,43 @@ int main(int argc, char *argv[])
                             printf("Process %d allocated %d MB memory at address %d, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes, p.memory_address,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
                     }
                     else
-                    {
+                    {   
+                        //decrement runtime
                         p.proc_time--;
+                        //if runtime is complete, free process from memory
                         if(p.proc_time == 0)
                         {
                             free_mem(res, p.memory_address,p.mbytes);
                             printf("Process %d finished, freed %d MB memory, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
-                            pop(n);
+                            node_t* temp = pq1;
+                            if(temp == n)
+                            {
+                                free(n);
+                            }
+                            else
+                            {
+                                while(temp->next != n)
+                                    temp = temp->next;
+                                temp->next = n->next;
+                                n = temp;
+                            }
                         }
+                        //put p1 process onto pq2
                         else
                         {
                             printf("Process %d, %d time steps remaining\n",p.proc_num,p.proc_time);
-                            pop(n);
+                            node_t* temp = pq1;
+                            if(temp == n)
+                            {
+                                free(n);
+                            }
+                            else
+                            {
+                                while(temp->next != n)
+                                    temp = temp->next;
+                                temp->next = n->next;
+                                n = temp;
+                            }
                             push(pq2,p);
                         }
                 }
@@ -143,14 +191,18 @@ int main(int argc, char *argv[])
                 n = n->next;
                 }
             }
+            //if pq1 is empty
             else
-            {
+            {   
+                //if pq2 is not empty
                 if(pq2 != NULL)
                 {
                     node_t* n = pq2;
-                    while(n->next != NULL)
+                    //iterate through pq2
+                    while(n != NULL)
                     {
                         proc p = n->process;
+                        //allocate pq2 process if unallocated
                         if(p.memory_address == -1)
                         {
                             p.memory_address = alloc_mem(res,p.mbytes);
@@ -159,17 +211,42 @@ int main(int argc, char *argv[])
                         }
                         else
                         {
+                            //decrement runtime
                             p.proc_time--;
+                            //if runtime is finished, free memory
                             if(p.proc_time == 0)
                             {
                                 free_mem(res, p.memory_address,p.mbytes);
                                 printf("Process %d finished, freed %d MB memory, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
-                                pop(n);
+                                node_t* temp = pq2;
+                                if(temp == n)
+                                {
+                                    free(n);
+                                }
+                                else
+                                {
+                                    while(temp->next != n)
+                                        temp = temp->next;
+                                    temp->next = n->next;
+                                    n = temp;
+                                }
                             }
+                            //put pq2 process onto pq3
                             else
                             {
                                 printf("Process %d, %d time steps remaining\n",p.proc_num,p.proc_time);
-                                pop(n);
+                                node_t* temp = pq2;
+                                if(temp == n)
+                                {
+                                    free(n);
+                                }
+                                else
+                                {
+                                    while(temp->next != n)
+                                        temp = temp->next;
+                                    temp->next = n->next;
+                                    n = temp;
+                                }
                                 push(pq3,p);
                             }
                     }
@@ -177,13 +254,17 @@ int main(int argc, char *argv[])
                     n = n->next;
                     }
                 }
+                //if pq2 is empty
                 else
+                    //if pq3 is not empty
                     if(pq3 != NULL)
                     {
                         node_t* n = pq3;
-                        while(n->next != NULL)
+                        //iterate through pq3
+                        while(n != NULL)
                         {
                             proc p = n->process;
+                            //if pq3 process is unallocated, allocate it
                             if(p.memory_address == -1)
                             {
                                 p.memory_address = alloc_mem(res,p.mbytes);
@@ -192,17 +273,42 @@ int main(int argc, char *argv[])
                             }
                             else
                             {
+                                //decrement runtime
                                 p.proc_time--;
+                                //if runtime is complete, free memory
                                 if(p.proc_time == 0)
                                 {
                                     free_mem(res, p.memory_address,p.mbytes);
                                     printf("Process %d finished, freed %d MB memory, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
-                                    pop(n);
+                                    node_t* temp = pq3;
+                                    if(temp == n)
+                                    {
+                                        free(n);
+                                    }
+                                    else
+                                    {
+                                        while(temp->next != n)
+                                            temp = temp->next;
+                                        temp->next = n->next;
+                                        n = temp;
+                                    }
                                 }
+                                //put pq3 process at end of pq3
                                 else
                                 {
                                     printf("Process %d, %d time steps remaining\n",p.proc_num,p.proc_time);
-                                    pop(n);
+                                    node_t* temp = pq3;
+                                    if(temp == n)
+                                    {
+                                        free(n);
+                                    }
+                                    else
+                                    {
+                                        while(temp->next != n)
+                                            temp = temp->next;
+                                        temp->next = n->next;
+                                        n = temp;
+                                    }
                                     push(pq3,p);
                                 }
                         }

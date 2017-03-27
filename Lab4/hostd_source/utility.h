@@ -11,6 +11,8 @@
 // The amount of available memory
 #define MEMORY 1024
 
+typedef struct node node_t;
+
 // Resources structure containing integers for each resource constraint and an
 // array of 1024 for the memory
 typedef struct {

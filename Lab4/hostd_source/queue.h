@@ -14,7 +14,9 @@
 typedef struct node{ 
   proc process;
   struct node* next;
-} node_t; 
+};
+
+typedef struct node node_t; 
 
 // Include your relevant FIFO queue functions declarations here they must start 
 // with the extern keyword such as in the following examples:

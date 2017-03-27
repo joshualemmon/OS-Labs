@@ -29,7 +29,9 @@ int main(int argc, char *argv[])
     // ==================== YOUR CODE HERE ==================== //
     // Load the dispatchlist
     resources res;
-    res.memory_ array = { 0 };
+    //res.memory_array = { 0 }; giving error
+    for(int i = 0; i < MEMORY; i++)
+        res.memory_array[i] = 0;
     res.scanners = 1;
     res.printers = 2;
     res.cds = 2;
@@ -54,24 +56,25 @@ int main(int argc, char *argv[])
         while(curr->process.arrival_time == time && curr != NULL)
         {
             proc p = pop(curr);
+            p.proc_num = proc_num++;
             if(p.priority == 0)
             {
-                printf("Process %d added to RT queue.\n",proc_num++);
+                printf("Process %d added to RT queue.\n",p.proc_num);
                 push(rtq,p);
             }
             else if(p.priority == 1)
             {
-                printf("Process %d added to P1 queue.\n",proc_num++);
+                printf("Process %d added to P1 queue.\n",p.proc_num);
                 push(pq1,p);
             }
             else if(p.priority == 2)
             {
-                printf("Process %d added to P2 queue.\n",proc_num++);
+                printf("Process %d added to P2 queue.\n",p.proc_num);
                 push(pq2,p);
             }
             else
             {
-                printf("Process %d added to P3 queue.\n",proc_num++);
+                printf("Process %d added to P3 queue.\n",p.proc_num);
                 push(pq3,p);
             }
             curr=curr->next;
@@ -79,9 +82,28 @@ int main(int argc, char *argv[])
         if(rtq != NULL)
         {
             node_t* n = rtq;
-            proc p = n->process;
-
-            printf("Process 1 allocated %d MB memory at address %d, %d printers, %d scanners, %d modems, %d CDs\n",p.mbytes, p.memory_address,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
+            while(n->next != NULL)
+            {
+                proc p = n->process;
+                if(p.memory_address == -1)
+                {
+                    p.memory_address = alloc_mem(res,p.mbytes);
+                    if(p.memory_address != -1)
+                        printf("Process %d allocated %d MB memory at address %d, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes, p.memory_address,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
+                }
+                else
+                {
+                    p.proc_time--;
+                    if(p.proc_time == 0)
+                    {
+                        free_mem(res, p.memory_address,p.mbytes);
+                        printf("Process %d finished, freed %d MB memory, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
+                    }
+                    else
+                        printf("Process %d, %d time steps remaining\n",p.proc_num,p.proc_time);
+                }
+                n = n->next;
+            }
         }
         time++;
     }

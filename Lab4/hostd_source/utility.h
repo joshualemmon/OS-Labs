@@ -17,8 +17,9 @@ typedef struct node node_t;
 // array of 1024 for the memory
 typedef struct {
 	int memory_array[MEMORY];
+	int printers;
 	int scanners;
-	int modem;
+	int modems;
 	int cds;
 } resources;
 
@@ -36,6 +37,7 @@ typedef struct {
 	int num_scanners;
 	int num_modems;
 	int memory_address;
+	int proc_num;
 } proc;
 
 

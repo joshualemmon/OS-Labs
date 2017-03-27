@@ -126,12 +126,94 @@ int main(int argc, char *argv[])
                     else
                     {
                         p.proc_time--;
-                    }
+                        if(p.proc_time == 0)
+                        {
+                            free_mem(res, p.memory_address,p.mbytes);
+                            printf("Process %d finished, freed %d MB memory, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
+                            pop(n);
+                        }
+                        else
+                        {
+                            printf("Process %d, %d time steps remaining\n",p.proc_num,p.proc_time);
+                            pop(n);
+                            push(pq2,p);
+                        }
+                }
+                n->process = p;
+                n = n->next;
                 }
             }
+            else
+            {
+                if(pq2 != NULL)
+                {
+                    node_t* n = pq2;
+                    while(n->next != NULL)
+                    {
+                        proc p = n->process;
+                        if(p.memory_address == -1)
+                        {
+                            p.memory_address = alloc_mem(res,p.mbytes);
+                            if(p.memory_address != -1)
+                                printf("Process %d allocated %d MB memory at address %d, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes, p.memory_address,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
+                        }
+                        else
+                        {
+                            p.proc_time--;
+                            if(p.proc_time == 0)
+                            {
+                                free_mem(res, p.memory_address,p.mbytes);
+                                printf("Process %d finished, freed %d MB memory, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
+                                pop(n);
+                            }
+                            else
+                            {
+                                printf("Process %d, %d time steps remaining\n",p.proc_num,p.proc_time);
+                                pop(n);
+                                push(pq3,p);
+                            }
+                    }
+                    n->process = p;
+                    n = n->next;
+                    }
+                }
+                else
+                    if(pq3 != NULL)
+                    {
+                        node_t* n = pq3;
+                        while(n->next != NULL)
+                        {
+                            proc p = n->process;
+                            if(p.memory_address == -1)
+                            {
+                                p.memory_address = alloc_mem(res,p.mbytes);
+                                if(p.memory_address != -1)
+                                    printf("Process %d allocated %d MB memory at address %d, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes, p.memory_address,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
+                            }
+                            else
+                            {
+                                p.proc_time--;
+                                if(p.proc_time == 0)
+                                {
+                                    free_mem(res, p.memory_address,p.mbytes);
+                                    printf("Process %d finished, freed %d MB memory, %d printers, %d scanners, %d modems, %d CDs\n",p.proc_num,p.mbytes,p.num_printers,p.num_scanners,p.num_modems,p.num_cds);
+                                    pop(n);
+                                }
+                                else
+                                {
+                                    printf("Process %d, %d time steps remaining\n",p.proc_num,p.proc_time);
+                                    pop(n);
+                                    push(pq3,p);
+                                }
+                        }
+                        n->process = p;
+                        n = n->next;
+                        }
+                    }
+            }
         }
-        time++;
-    }
+    time++;
+}
 
     // Allocate the resources for each process before it's executed
 

@@ -27,8 +27,15 @@
 int main(int argc, char *argv[])
 {
     // ==================== YOUR CODE HERE ==================== //
-    
     // Load the dispatchlist
+    node_t *dispatch_queue = NULL;
+    load_dispatch(argv[1], dispatch_queue);
+
+    while(dispatch_queue != NULL)
+    {
+        node_t* curr = pop(dispatch_queue);
+        printf("%d\n",curr->process.mbytes);
+    }
         
     // Add each process structure instance to the job dispatch list queue
 

@@ -15,11 +15,21 @@
 //add a node to the end of the queue
 node_t *push(node_t *head, proc process)
 {
+	printf("pushing node\n");
 	node_t* newNode = NULL;
+	if(head == NULL)
+	{
+		head = malloc(sizeof(node_t));
+		head->process = process;
+		printf("adding first node\n");
+		head->next = NULL;
+	}
 	//if the head is the only node in the queue,
 	//simply add a new node for head to point to.
-	if (head->next == NULL)
+	else if (head->next == NULL)
 	{
+		printf("adding second node\n");
+		newNode = malloc(sizeof(node_t));
 		newNode->process = process;
 		newNode->next = NULL;
 		head->next = newNode;
@@ -29,6 +39,8 @@ node_t *push(node_t *head, proc process)
 	//and point the tail to the new node
 	else
 	{
+		newNode = malloc(sizeof(node_t));
+		printf("adding other node\n");
 		node_t* curr;
 		curr = head;
 		while(curr->next != NULL)

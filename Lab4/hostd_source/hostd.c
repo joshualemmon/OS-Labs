@@ -57,37 +57,39 @@ int main(int argc, char *argv[])
         printf("Time step %d:\n", time);
         //iterate through dispatch list until all arrival times equal to 
         //current timestep are dealt with.
-        while(curr->process.arrival_time == time && curr != NULL)
+        if(curr != NULL)
         {
-            proc p = pop(curr);
-            //push process onto its respective priority queue
-            if(p.priority == 0)
+            while(curr->process.arrival_time == time)
             {
-                printf("Process %d added to RT queue.\n",p.proc_num);
-                push(rtq,p);
+                proc p = pop(curr);
+                //push process onto its respective priority queue
+                if(p.priority == 0)
+                {
+                    printf("Process %d added to RT queue.\n",p.proc_num);
+                    push(rtq,p);
+                }
+                else if(p.priority == 1)
+                {
+                    printf("Process %d added to P1 queue.\n",p.proc_num);
+                    push(pq1,p);
+                }
+                else if(p.priority == 2)
+                {
+                    printf("Process %d added to P2 queue.\n",p.proc_num);
+                    push(pq2,p);
+                }
+                else
+                {
+                    printf("Process %d added to P3 queue.\n",p.proc_num);
+                    push(pq3,p);
+                }    
+                curr=curr->next;
             }
-            else if(p.priority == 1)
-            {
-                printf("Process %d added to P1 queue.\n",p.proc_num);
-                push(pq1,p);
-            }
-            else if(p.priority == 2)
-            {
-                printf("Process %d added to P2 queue.\n",p.proc_num);
-                push(pq2,p);
-            }
-            else
-            {
-                printf("Process %d added to P3 queue.\n",p.proc_num);
-                push(pq3,p);
-            }    
-            curr=curr->next;
         }
         //prioritize the real time queue first
         //if the rtq isnt empty
         if(rtq != NULL)
         {
-            printf("rtq not empty\n");
             node_t* n = rtq;
             //iterate through rtq
             while(n != NULL)
@@ -135,7 +137,6 @@ int main(int argc, char *argv[])
             //if the priority 1 queue isn't empty
             if(pq1 != NULL)
             {
-                printf("pq1 not empty\n");
                 node_t* n = pq1;
                 //iterate through pq1
                 while(n != NULL)
@@ -253,7 +254,6 @@ int main(int argc, char *argv[])
                         n = n->next;
                     }
                 }
-                printf("pq3 not empty\n");
                 //if pq3 is not empty
                 if(pq3 != NULL)
                 {

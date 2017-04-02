@@ -12,6 +12,7 @@
 #include <semaphore.h>
 #include "banker.h"
 #include "time.h"
+#include <unistd.h>
 
 // Put any other macros or constants here using #define
 // May be any values >= 0
@@ -116,6 +117,7 @@ bool request_res(int n_customer, int request[])
     sem_post(&sem);
     if(!request_less)
         return 0;
+    sem_wait(&sem);
     for(int i = 0; i < NUM_RESOURCES; i++)
     {
         available[i] -= request[i];
@@ -124,7 +126,10 @@ bool request_res(int n_customer, int request[])
     }
     bool safe = is_safe();
     if(safe)
+    {
+        sem_post(&sem);
         return 1;
+    }
     else
         release_res(n_customer,request);
     sem_post(&sem);
@@ -151,8 +156,13 @@ void* thread_start(void *param)
 
     while(1)
     {
+        pthread_mutex_unlock(&print_mutex);
+        sleep(rand()%11);
         for(int i = 0; i < NUM_RESOURCES; i++)
-            request[i] = rand()%maximum[n-1][i]+1;
+            if(need[n-1][i] != 0)
+                request[i] = rand()%(need[n-1][i])+1;
+            else
+                request[i] = 0;
         bool req = request_res(n-1, request);
         pthread_mutex_lock(&print_mutex);
         if(req)
@@ -185,7 +195,6 @@ void* thread_start(void *param)
                 printf("%d ",available[i]);
             printf("\n");
         }
-        pthread_mutex_unlock(&print_mutex);
     }
 }
 

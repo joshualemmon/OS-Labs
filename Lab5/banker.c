@@ -33,45 +33,47 @@ int allocation[NUM_CUSTOMERS][NUM_RESOURCES];
 int need[NUM_CUSTOMERS][NUM_RESOURCES];
 
 sem_t sem;
+pthread_mutex_t print_mutex;
 
 bool is_safe()
 {
     int work[NUM_RESOURCES];
     for(int i = 0; i < NUM_RESOURCES; i++)
         work[i] = available[i];
-    int finish[NUM_CUSTOMERS]= { 0 };
-    for(int i = 0; i < NUM_CUSTOMERS; i++)
+    int finish[NUM_CUSTOMERS] = { 0 };
+    for(int k = 0; k < NUM_CUSTOMERS; k++)
     {
-        int need_less = 0;
-        for(int j = 0; j < NUM_CUSTOMERS; j++)
+        for(int i = 0; i < NUM_CUSTOMERS; i++)
         {
-            if(need[i][j] <= work[j])
+            int need_less = 0;
+            for(int j = 0; j < NUM_RESOURCES; j++)
             {
-                need_less = 1;
+                if(need[i][j] <= work[j])
+                {
+                    need_less = 1;
+                }
+                else
+                {
+                    need_less = 0;
+                    break;
+                }
             }
-            else
+            if(!finish[i] && need_less)
             {
-                need_less = 0;
-                break;
+                for(int j = 0; j < NUM_RESOURCES; j++)
+                    work[j]+=allocation[i][j];
+                finish[i] = 1;
             }
-        }
-        if(!finish[i] && need_less)
-        {
-            for(int j = 0; j < NUM_CUSTOMERS; j++)
-            {
-
-                work[j]+=allocation[i][j];
-            }
-            finish[i] = 1;
         }
     }
-    int safe = 0;
+    int safe = 1;
     for(int i = 0; i < NUM_CUSTOMERS; i++)
     {
         if(finish[i] == 0)
+        {
+            safe = 0;
             break;
-        else
-            safe = 1; 
+        }
     }
     return safe;
 }
@@ -82,8 +84,9 @@ bool request_res(int n_customer, int request[])
     bool req = 0;
     int request_less = 0;
     sem_wait(&sem);
-    for(int i = 0; i < NUM_CUSTOMERS; i++)
+    for(int i = 0; i < NUM_RESOURCES; i++)
     {
+        //printf("n: %d, request: %d, need: %d\n",n_customer,request[i],need[n_customer][i]);
         if(request[i] <= need[n_customer][i])
         {
             request_less = 1;
@@ -97,41 +100,34 @@ bool request_res(int n_customer, int request[])
     sem_post(&sem);
     if(!request_less)
         return 0;
-    while(1)
+    sem_wait(&sem);
+    for(int i = 0; i < NUM_RESOURCES; i++)
     {
-        sem_wait(&sem);
-        for(int i = 0; i < NUM_CUSTOMERS; i++)
+        if(request[i] <= available[i])
         {
-            if(request[i] <= available[i])
-            {
-                request_less = 1;
-            }
-            else
-            {
-                request_less = 0;
-                break;
-            }
+            request_less = 1;
         }
-        if(!request_less)
-        {
-            sem_post(&sem);
-            sem_wait(&sem);
-        }
-
-        for(int i = 0; i < NUM_RESOURCES; i++)
-        {
-            available[i] -= request[i];
-            allocation[n_customer][i] += request[i];
-            need[n_customer][i] -= request[i];
-        }
-        if(is_safe())
-            return 1;
         else
-            release_res(n_customer,request);
-        sem_post(&sem);
+        {
+            request_less = 0;
+            break;
+        }
     }
-
-    
+    sem_post(&sem);
+    if(!request_less)
+        return 0;
+    for(int i = 0; i < NUM_RESOURCES; i++)
+    {
+        available[i] -= request[i];
+        allocation[n_customer][i] += request[i];
+        need[n_customer][i] -= request[i];
+    }
+    bool safe = is_safe();
+    if(safe)
+        return 1;
+    else
+        release_res(n_customer,request);
+    sem_post(&sem);
     return req;
 }
 
@@ -156,23 +152,40 @@ void* thread_start(void *param)
     while(1)
     {
         for(int i = 0; i < NUM_RESOURCES; i++)
-            request[i] = rand()%maximum[n][i]+1;
-        int req = request_res(n, request);
+            request[i] = rand()%maximum[n-1][i]+1;
+        bool req = request_res(n-1, request);
+        pthread_mutex_lock(&print_mutex);
         if(req)
         {
-            printf("Customer %d\t Allocated\t ", n);
+            printf("Customer %d\t Allocated\t Requested: ", n);
             for(int i = 0; i < NUM_RESOURCES; i++)
                 printf("%d ",request[i]);
+            printf("\tAvailable: ");
+            for(int i = 0; i <  NUM_RESOURCES; i++)
+                printf("%d ",available[i]);
             printf("\n");
+            sem_wait(&sem);
+            release_res(n-1,request);
+            printf("Customer %d\t Released: ",n);
+            for(int i = 0; i < NUM_RESOURCES; i++)
+                printf("%d ",request[i]);
+            printf("\tAvailable: ");
+            for(int i = 0; i <  NUM_RESOURCES; i++)
+                printf("%d ",available[i]);
+            printf("\n");
+            sem_post(&sem);
         }
         else
         {
-            printf("Customer %d\t Denied\t ", n);
+            printf("Customer %d\t Denied\t Requested: ", n);
             for(int i = 0; i < NUM_RESOURCES; i++)
                 printf("%d ",request[i]);
+            printf("\tAvailable: ");
+            for(int i = 0; i <  NUM_RESOURCES; i++)
+                printf("%d ",available[i]);
             printf("\n");
         }
-
+        pthread_mutex_unlock(&print_mutex);
     }
 }
 
@@ -182,16 +195,24 @@ int main(int argc, char *argv[])
     // ==================== YOUR CODE HERE ==================== //
     srand(time(NULL));
     // Read in arguments from CLI, NUM_RESOURCES is the number of arguments
-    for(int i = 0; i < argc; i++)
-        available[i] = (int)argv[i];   
+    for(int i = 1; i < argc; i++)
+        available[i-1] = atoi(argv[i]);   
     
     for(int i = 0; i < NUM_CUSTOMERS; i++)
+    {
         for(int j = 0; j < NUM_RESOURCES; j++)
-            maximum[i][j] = j+2;
+        {
+            allocation[i][j] = 0;
+            maximum[i][j] = rand()%5 + 1;
+            need[i][j] = maximum[i][j];
+        }
+    }
+
     // Allocate the available resources
 
     // Initialize the pthreads, locks, mutexes, etc.
     sem_init(&sem, 0, 1);
+    pthread_mutex_init(&print_mutex,NULL);
     pthread_t threads[NUM_CUSTOMERS];
     for(int i = 0; i < NUM_CUSTOMERS; i++)
         pthread_create(&threads[i],NULL,(void*)thread_start,(void*)(i+1));
@@ -203,9 +224,8 @@ int main(int argc, char *argv[])
 
     // If your program hangs you may have a deadlock, otherwise you *may* have
     // implemented the banker's algorithm correctly
-    
+    while(1){}
     // If you are having issues try and limit the number of threads (NUM_CUSTOMERS)
     // to just 2 and focus on getting the multithreading working for just two threads
-    printf("\n");
     return EXIT_SUCCESS;
 }
